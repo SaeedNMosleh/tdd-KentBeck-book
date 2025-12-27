@@ -1,14 +1,18 @@
-from src.money import Dollar, Franc
+from src.money import Dollar, Franc, Money
 def testMultiplication():
-    five = Dollar(5)
-    assert five.times(2).equal(Dollar(10))
-    assert five.times(3).equal(Dollar(15))
+    five = Money.dollar(5)
+    assert five.times(2).equal(Money.dollar(10))
+    assert five.times(3).equal(Money.dollar(15))
 
 def testEquality():
-    assert Dollar(5).equal(Dollar(5))
-    assert not Dollar(5).equal(Dollar(6))
+    assert Money.dollar(5).equal(Money.dollar(5))
+    assert not Money.dollar(5).equal(Money.dollar(6))
+    assert Money.franc(5).equal(Money.franc(5))
+    assert not Money.franc(5).equal(Money.franc(6))
+    assert not Money.franc(5).equal(Money.dollar(5))
+    
 
 def testFrancMultiplication():
-    five = Franc(5)
-    assert five.times(2).equal(Franc(10))
-    assert five.times(3).equal(Franc(15))
+    five = Money.franc(5)
+    assert five.times(2).equal(Money.franc(10))
+    assert five.times(3).equal(Money.franc(15))
