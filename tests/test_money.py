@@ -20,3 +20,6 @@ def testFrancMultiplication():
 def testCurrency():
     assert "USD" == Money.dollar(1).currency()
     assert "CHF" == Money.franc(1).currency()
+
+def testDifferentClassEquality():
+    assert Money(10,"CHF").equal(Franc(10,"CHF"))
