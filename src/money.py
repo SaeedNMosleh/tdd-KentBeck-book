@@ -1,7 +1,23 @@
-from abc import ABC, abstractmethod
-from typing import Self
+from typing import Protocol
 
-class Money():
+class Expression(Protocol):
+    def reduce(self,to):
+        pass
+
+class Bank(Expression):
+    def __init__(self) -> None:
+        pass
+    def reduce(self,source: Expression, to):
+        return source.reduce(to)
+class Sum(Expression):
+    def __init__(self, augend: "Money", addend: "Money") -> None:
+        self.augend = augend
+        self.addend = addend
+    def reduce(self,to):
+        amount = self.augend._amount + self.addend._amount
+        return Money(amount, to)
+
+class Money(Expression):
     def __init__(self,amount,currency) -> None:
         self._amount = amount
         self._currency = currency        
@@ -11,11 +27,11 @@ class Money():
     
     @classmethod
     def dollar(cls,amount):
-        return Dollar(amount,currency="USD")
+        return Money(amount,currency="USD")
     
     @classmethod
     def franc(cls,amount):
-        return Franc(amount,currency="CHF")
+        return Money(amount,currency="CHF")
 
     
     def times(self, multiplier):
@@ -24,15 +40,7 @@ class Money():
     def currency(self) -> str:
         return self._currency
 
-
-class Dollar(Money): 
-    def __init__(self,amount,currency) -> None:
-        super().__init__(amount,currency)
-        self._currency = currency        
-                
-
-class Franc(Money):
-    def __init__(self,amount,currency) -> None:
-        super().__init__(amount,currency)
-        self._currency = currency
-        
+    def plus(self,addend):
+        return Sum(self, addend)       
+    def reduce(self, to):
+        return self
