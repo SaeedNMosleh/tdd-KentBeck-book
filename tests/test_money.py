@@ -1,4 +1,4 @@
-from src.money import Money, Bank, Expression, Sum
+from src.money import Money, Bank, Expression, Sum, Bank
 def testMultiplication():
     five = Money.dollar(5)
     assert five.times(2).equal(Money.dollar(10))
@@ -39,3 +39,16 @@ def testReduceMoney():
     bank = Bank()
     result : Money = bank.reduce(Money.dollar(1), "USD")
     assert Money.dollar(1).equal(result)
+
+def testReduceMoneyDifferentCurrency():
+    bank = Bank()
+    bank.addRate("CHF", "USD", 2)
+    result = bank.reduce(Money.franc(2), "USD")
+    assert Money.dollar(1).equal(result)
+
+def testArrayEquals():
+    assert ["abc"] == ["abc"]
+
+def testIdentityRate():
+    bank = Bank()
+    assert 1 == bank.rate("USD", "USD")
