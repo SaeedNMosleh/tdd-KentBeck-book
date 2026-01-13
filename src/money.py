@@ -3,6 +3,10 @@ from typing import Protocol
 class Expression(Protocol):
     def reduce(self,bank: "Bank", to) -> "Money":
         ...
+    def plus(self,addend:"Expression") -> "Expression":
+        ...
+    def times(self,multiplier) -> "Expression":
+        ...
 
 class Bank():
     def __init__(self) -> None:
@@ -21,12 +25,16 @@ class Bank():
         
         
 class Sum(Expression):
-    def __init__(self, augend: "Money", addend: "Money") -> None:
+    def __init__(self, augend: Expression, addend: Expression) -> None:
         self.augend = augend
         self.addend = addend
     def reduce(self,bank:Bank,to):
-        amount = self.augend._amount + self.addend._amount
+        amount = self.augend.reduce(bank, to)._amount + self.addend.reduce(bank,to)._amount
         return Money(amount, to)
+    def plus(self,addend:Expression) -> Expression:
+        return Sum(self,addend)
+    def times(self,multiplier) -> Expression:
+        return Sum(self.augend.times(multiplier),self.addend.times(multiplier))
 
 class Money(Expression):
     def __init__(self,amount,currency) -> None:
@@ -51,7 +59,7 @@ class Money(Expression):
     def currency(self) -> str:
         return self._currency
 
-    def plus(self,addend):
+    def plus(self,addend:Expression) -> Expression:
         return Sum(self, addend)  
          
     def reduce(self, bank:Bank, to):

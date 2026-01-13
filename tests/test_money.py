@@ -1,4 +1,5 @@
 from src.money import Money, Bank, Expression, Sum, Bank
+from typing import cast
 def testMultiplication():
     five = Money.dollar(5)
     assert five.times(2).equal(Money.dollar(10))
@@ -25,7 +26,7 @@ def testSimpleAddition():
 def testPlusReturnSum():
     five = Money.dollar(5)
     result: Expression = five.plus(five)
-    sum : Sum = result
+    sum :Sum = cast(Sum,result)
     assert five.equal(sum.augend)
     assert five.equal(sum.addend)
 
@@ -52,3 +53,33 @@ def testArrayEquals():
 def testIdentityRate():
     bank = Bank()
     assert 1 == bank.rate("USD", "USD")
+
+def testMixedAddition():
+    fiveBucks : Expression = Money.dollar(5)
+    tenFranc:Expression = Money.franc(10)
+    bank = Bank()
+    bank.addRate("CHF", "USD", 2)
+    result : Money = bank.reduce(fiveBucks.plus(tenFranc), "USD")
+    assert Money.dollar(10).equal(result)
+
+def testSumPlusMoney():
+    fiveBucks: Expression = Money.dollar(5)
+    tenFrancs: Expression = Money.franc(10)
+    bank = Bank()
+    bank.addRate("CHF", "USD", 2)
+    sum: Expression = Sum(fiveBucks, tenFrancs)
+    result: Money = bank.reduce(sum.plus(fiveBucks), "USD")
+    assert Money.dollar(15).equal(result)
+
+def testSumTimes():
+    fiveBucks : Expression = Money.dollar(5)
+    tenfrancs : Expression = Money.franc(10)
+    bank = Bank()
+    bank.addRate("CHF", "USD", 2)
+    sum : Expression = Sum(fiveBucks, tenfrancs).times(2)
+    result : Money = bank.reduce(sum, "USD")
+    assert Money.dollar(20).equal(result)
+
+""" def testPlusSameCurrencyReturns():
+    sum : Expression = Money.dollar(1).plus(Money.dollar(1))
+    assert isinstance(sum, Money) """
